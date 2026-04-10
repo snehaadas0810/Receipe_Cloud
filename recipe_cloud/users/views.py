@@ -83,11 +83,23 @@ def logout_view(request):
 
 
 # ================= HOME =================
-@login_required
+from posts.models import Post
+
 def home_view(request):
     posts = Post.objects.all().order_by('-created_at')
-    return render(request, 'users/home.html', {'posts': posts})
 
+    query = request.GET.get('q')
+    category = request.GET.get('category')
+
+    if query:
+        posts = posts.filter(description__icontains=query)
+
+    if category:
+        posts = posts.filter(category=category)
+
+    return render(request, 'users/home.html', {
+        'posts': posts
+    })
 
 # ================= FORGOT PASSWORD =================
 def forgot_password(request):

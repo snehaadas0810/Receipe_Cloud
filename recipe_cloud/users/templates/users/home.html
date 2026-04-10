@@ -1,128 +1,236 @@
 <!DOCTYPE html>
 <html>
 
-<a href="{% url 'create_post' %}" 
-   style="background:#ff4d4d; color:white; padding:10px 15px; border-radius:8px;">
-   + Create Post
-</a>
-
 <head>
-    <title>Recipe Feed</title>
+    <title>RecipeGram</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         body {
-            background-color: #f5f5f5;
+            background: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        .card {
-            border-radius: 15px;
+        /* LEFT SIDEBAR */
+        .sidebar {
+            position: fixed;
+            width: 230px;
+            height: 100vh;
+            background: white;
+            border-right: 1px solid #ddd;
+            padding: 20px;
         }
 
-        .post-media {
+        /* FEED */
+        .feed {
+            margin-left: 250px;
+            margin-right: 270px;
+        }
+
+        /* RIGHT SIDEBAR */
+        .rightbar {
+            position: fixed;
+            right: 0;
+            width: 250px;
+            height: 100vh;
+            background: white;
+            border-left: 1px solid #ddd;
+            padding: 20px;
+        }
+
+        /* 🔥 ZOMATO CARD */
+        .z-card {
+            border-radius: 12px;
+            overflow: hidden;
+            border: none;
+            transition: 0.3s;
+            background: white;
+        }
+
+        .z-card:hover {
+            transform: scale(1.03);
+        }
+
+        .z-card img {
+            height: 180px; /* ✅ FIXED SIZE */
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .z-card-body {
+            padding: 10px;
+        }
+
+        .z-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .z-meta {
+            font-size: 12px;
+            color: gray;
+        }
+
+        /* SEARCH */
+        .search-box input,
+        .search-box select {
+            border-radius: 8px;
+        }
+
+        /* MODAL */
+        .modal-content {
+            border-radius: 12px;
+        }
+
+        .modal-body img {
             max-height: 400px;
             object-fit: cover;
         }
 
-        .navbar {
-            background-color: #ffffff;
-            border-bottom: 1px solid #ddd;
+        .btn-post {
+            background: #ff4d4d;
+            color: white;
+            border-radius: 8px;
         }
+
+        .btn-post:hover {
+            background: #e60023;
+        }
+
     </style>
 </head>
 
 <body>
 
-<!-- 🔝 NAVBAR -->
-<nav class="navbar navbar-expand-lg shadow-sm mb-4">
-    <div class="container">
-        <h4 class="mb-0">🍽️ RecipeGram</h4>
+<!-- LEFT SIDEBAR -->
+<div class="sidebar">
+    <h4>🍔 RecipeGram</h4>
 
-        <div>
-            <a href="/posts/create/" class="btn btn-success btn-sm">+ Post</a>
-            <a href="/logout/" class="btn btn-danger btn-sm">Logout</a>
-        </div>
-    </div>
-</nav>
+    <a href="/" class="btn btn-light w-100 mt-2">Home</a>
 
-<!-- 📦 MAIN CONTAINER -->
-<div class="container">
+    <a href="{% url 'create_post' %}" class="btn btn-post w-100 mt-2">
+        + Post
+    </a>
 
-    <div class="text-center mb-4">
-        <h5>Welcome, <strong>{{ request.user.username }}</strong> 👋</h5>
-    </div>
+    <!-- ✅ NEW BUTTON -->
+    <a href="{% url 'my_posts' %}" class="btn btn-outline-primary w-100 mt-2">
+        My Posts
+    </a>
 
-    <!-- 🔁 POSTS LOOP -->
-    {% for post in posts %}
-        <div class="card mb-4 shadow-sm">
+    <a href="/logout/" class="btn btn-outline-dark w-100 mt-2">
+        Logout
+    </a>
+</div>
 
-            <div class="card-body">
+<!-- CENTER FEED -->
+<div class="feed container mt-4">
 
-                <!-- 👤 USER -->
-                <h6 class="text-muted">Posted by {{ post.user.username }}</h6>
+    <h5 class="mb-3">👋 Welcome, {{ request.user.username }}</h5>
 
-                <!-- 📝 DESCRIPTION -->
-                <p class="mt-2">{{ post.description }}</p>
+    <!-- SEARCH -->
+    <form method="GET" class="search-box mb-4">
+        <input type="text" name="q" placeholder="Search recipes..." class="form-control mb-2">
 
-                <!-- 📸 IMAGE / VIDEO -->
-                {% if post.media_type == 'image' %}
-                    <img src="{{ post.media.url }}" class="img-fluid rounded post-media">
-                {% else %}
-                    <video class="w-100 rounded post-media" controls>
-                        <source src="{{ post.media.url }}">
-                    </video>
-                {% endif %}
+        <select name="category" class="form-control mb-2">
+            <option value="">All</option>
+            <option value="veg">Veg</option>
+            <option value="nonveg">Non-Veg</option>
+        </select>
 
-                <!-- 🧾 INGREDIENTS -->
-                <h6 class="mt-3">Ingredients:</h6>
-                <ul>
-                    {% for ing in post.ingredients.all %}
-                        <li>{{ ing.name }}</li>
-                    {% empty %}
-                        <li>No ingredients listed</li>
-                    {% endfor %}
-                </ul>
+        <button class="btn btn-primary w-100">Search</button>
+    </form>
 
-                <!-- 🗑️ DELETE BUTTON -->
-                {% if post.user == request.user %}
-                    <a href="/posts/delete/{{ post.id }}/" class="btn btn-sm btn-outline-danger">
-                        Delete
-                    </a>
-                {% endif %}
+    <!-- 🔥 GRID LAYOUT -->
+    <div class="row">
+
+        {% for post in posts %}
+        <div class="col-md-6 col-lg-4 mb-4">
+
+            <div class="card z-card shadow-sm">
+
+                <!-- IMAGE -->
+                <img src="{{ post.media.url }}"
+                     data-bs-toggle="modal"
+                     data-bs-target="#postModal{{ post.id }}">
+
+                <!-- BODY -->
+                <div class="z-card-body">
+
+                    <div class="z-title">
+                        {{ post.description|truncatechars:40 }}
+                    </div>
+
+                    <div class="z-meta">
+                        👨 {{ post.user.username }} • {{ post.category }}
+                    </div>
+
+                </div>
 
             </div>
-        </div>
-    {% empty %}
-        <!-- ❌ NO POSTS -->
-        <div class="text-center mt-5">
-            <h5>No posts yet 😔</h5>
-            <a href="/posts/create/" class="btn btn-primary mt-3">Create your first post</a>
-        </div>
-    {% endfor %}
 
+        </div>
+
+        <!-- MODAL -->
+        <div class="modal fade" id="postModal{{ post.id }}" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h6>{{ post.user.username }} • {{ post.category }}</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                   <div class="modal-body">
+
+    <!-- IMAGE -->
+    <img src="{{ post.media.url }}" class="img-fluid mb-3 rounded">
+
+    <!-- DESCRIPTION -->
+    <p class="mb-3">
+        <strong>Description:</strong><br>
+        {{ post.description }}
+    </p>
+
+    <!-- INGREDIENTS -->
+    <p class="mb-1"><strong>Ingredients:</strong></p>
+    <div style="white-space: pre-line;">
+        {{ post.ingredients }}
+    </div>
+
+    <!-- PROCESS -->
+    <p class="mt-3 mb-1"><strong>Process:</strong></p>
+    <div style="white-space: pre-line;">
+        {{ post.processtomake }}
+    </div>
 
 </div>
-{% for post in posts %}
 
-<div>
-    <h4>{{ post.user.username }}</h4>
+                </div>
+            </div>
+        </div>
 
-    {% if post.media.url|lower|slice:"-4:" == ".mp4" %}
-        <video width="300" controls>
-            <source src="{{ post.media.url }}">
-        </video>
-    {% else %}
-        <img src="{{ post.media.url }}" width="300">
-    {% endif %}
+        {% endfor %}
 
-    <p>{{ post.description }}</p>
-    <p>{{ post.ingredients }}</p>
+    </div>
 
 </div>
 
-{% endfor %}
+<!-- RIGHT SIDEBAR -->
+<div class="rightbar">
+    <h6>{{ request.user.username }}</h6>
+    <p class="text-muted">Recipe Lover 🍴</p>
+
+    <hr>
+
+    <h6>Filters</h6>
+
+    <a href="?category=veg" class="btn btn-outline-success w-100 mb-2">Veg Recipes</a>
+    <a href="?category=nonveg" class="btn btn-outline-danger w-100">Non-Veg Recipes</a>
+</div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
