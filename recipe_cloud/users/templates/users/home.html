@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html>
+
+<a href="{% url 'create_post' %}" 
+   style="background:#ff4d4d; color:white; padding:10px 15px; border-radius:8px;">
+   + Create Post
+</a>
+
 <head>
     <title>Recipe Feed</title>
 
@@ -96,7 +102,27 @@
         </div>
     {% endfor %}
 
+
 </div>
+{% for post in posts %}
+
+<div>
+    <h4>{{ post.user.username }}</h4>
+
+    {% if post.media.url|lower|slice:"-4:" == ".mp4" %}
+        <video width="300" controls>
+            <source src="{{ post.media.url }}">
+        </video>
+    {% else %}
+        <img src="{{ post.media.url }}" width="300">
+    {% endif %}
+
+    <p>{{ post.description }}</p>
+    <p>{{ post.ingredients }}</p>
+
+</div>
+
+{% endfor %}
 
 </body>
 </html>

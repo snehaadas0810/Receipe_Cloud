@@ -6,29 +6,19 @@ from .models import Post, Ingredient
 # ✅ CREATE POST
 @login_required
 def create_post(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         media = request.FILES.get('media')
         description = request.POST.get('description')
+        ingredients = request.POST.get('ingredients')
 
-        # Create Post
-        post = Post.objects.create(
+        Post.objects.create(
             user=request.user,
             media=media,
-            description=description
+            description=description,
+            ingredients=ingredients
         )
 
-        # Save Ingredients
-        ingredients = [
-            request.POST.get('ingredient1'),
-            request.POST.get('ingredient2'),
-            request.POST.get('ingredient3'),
-        ]
-
-        for item in ingredients:
-            if item:
-                Ingredient.objects.create(post=post, name=item)
-
-        return redirect('home')
+        return redirect('home')  # VERY IMPORTANT
 
     return render(request, 'posts/create_post.html')
 
