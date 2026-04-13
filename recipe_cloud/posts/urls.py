@@ -16,4 +16,6 @@ urlpatterns = [
 
     # 🗑 DELETE POST
     path('delete/<int:post_id>/', views.delete_post, name='delete_post'),
+
+    path('export-posts/', views.export_posts, name='export_posts'),
 ]

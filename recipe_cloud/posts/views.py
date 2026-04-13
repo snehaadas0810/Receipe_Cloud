@@ -92,3 +92,60 @@ def posts_home(request):
     return render(request, 'users/home.html', {
         'posts': posts
     })
+
+
+
+import csv
+import boto3
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
+from .models import Post
+
+
+@login_required
+def export_posts(request):
+    if request.method == "POST":
+
+        # 👉 Create CSV response
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="my_posts.csv"'
+
+        writer = csv.writer(response)
+
+        # Header
+        writer.writerow(["User", "Description", "Category", "Created At"])
+
+        # Data
+        posts = Post.objects.filter(user=request.user)
+
+        for post in posts:
+            writer.writerow([
+                post.user.username,
+                post.description,
+                post.category,
+                post.created_at
+            ])
+
+        # 👉 Upload to S3
+        try:
+            s3 = boto3.client(
+                "s3",
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                region_name="eu-north-1"
+            )
+
+            s3.put_object(
+                Bucket="recipe-export-sneha",   # 🔥 change this
+                Key=f"backups/{request.user.username}_posts.csv",
+                Body=response.content,
+                ContentType="text/csv"
+            )
+
+            print("✅ Uploaded to S3")
+
+        except Exception as e:
+            print("❌ S3 Upload Error:", e)
+
+        return response

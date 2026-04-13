@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>My Posts - RecipeGram</title>
+    <title>My Posts - Recipe Cloud</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -85,7 +85,7 @@
 <nav class="navbar">
     <div class="container-fluid px-5 d-flex justify-content-between align-items-center">
 
-        <div class="navbar-brand">🍔 RecipeGram</div>
+        <div class="navbar-brand">🍔 Recipe Cloud</div>
 
         <div>
 <a href="{% url 'posts_home' %}" class="nav-link d-inline">Home</a>
@@ -103,8 +103,18 @@
 
 <!-- 🔥 MAIN -->
 <div class="container-fluid px-5">
+ <!-- HEADER -->
+    <div class="header-box">
+        <div class="section-title">👤 My Recipes</div>
 
-    <div class="section-title">👤 My Recipes</div>
+        <!-- ✅ EXPORT BUTTON (WORKING) -->
+        <form method="POST" action="{% url 'export_posts' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-export">
+                ⬇ Export Data
+            </button>
+        </form>
+    </div>
 
     <div class="row">
 
