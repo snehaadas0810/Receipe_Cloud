@@ -3,11 +3,22 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-9kl2h@-9qg+^u#tche0o@bnjxhs9qtz9*xehu_*wibwu=!h1q%'
+# SECRET_KEY = 'django-insecure-9kl2h@-9qg+^u#tche0o@bnjxhs9qtz9*xehu_*wibwu=!h1q%'
 
-DEBUG = True
+# DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+# SECURITY
+SECRET_KEY = "django-insecure-xkfi1eu&39_5v@=wnpmpm8@p0w%p!e^uum@%j81!ju%q+%8438"
+DEBUG = False
+ 
+ALLOWED_HOSTS = [
+    "13.62.94.190",
+    "localhost",
+    "127.0.0.1",
+    "ec2-13-62-94-190.eu-north-1.compute.amazonaws.com",
+    "*",
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
