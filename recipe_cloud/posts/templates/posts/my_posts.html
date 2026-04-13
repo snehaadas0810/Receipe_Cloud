@@ -6,53 +6,70 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
         body {
-            background: #fafafa;
-            font-family: 'Segoe UI', sans-serif;
+            background: #f8fafc;
+            font-family: 'Inter', sans-serif;
         }
 
-        /* SIDEBAR */
-        .sidebar {
-            position: fixed;
-            width: 240px;
-            height: 100vh;
+        /* NAVBAR */
+        .navbar {
             background: white;
-            border-right: 1px solid #ddd;
-            padding: 20px;
+            padding: 18px 40px;
         }
 
-        /* FEED */
-        .feed {
-            margin-left: 260px;
-            margin-right: 280px;
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 24px;
         }
 
-        /* RIGHTBAR */
-        .rightbar {
-            position: fixed;
-            right: 0;
-            width: 260px;
-            height: 100vh;
-            background: white;
-            border-left: 1px solid #ddd;
-            padding: 20px;
+        .nav-link {
+            margin: 0 12px;
+            color: #475569 !important;
+        }
+
+        /* TITLE */
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 30px 0;
         }
 
         /* CARD */
         .post-card {
-            border-radius: 12px;
+            border-radius: 18px;
             overflow: hidden;
+            border: none;
+            background: white;
+            transition: 0.3s;
+        }
+
+        .post-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
         }
 
         .post-card img {
-            height: 180px;
+            height: 220px;
             object-fit: cover;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .meta {
+            font-size: 13px;
+            color: #64748b;
         }
 
         .btn-post {
             background: #ff4d4d;
             color: white;
+            border-radius: 10px;
         }
 
         .btn-post:hover {
@@ -64,49 +81,51 @@
 
 <body>
 
-<!-- ✅ SAME SIDEBAR -->
-<div class="sidebar">
-    <h4>🍔 RecipeGram</h4>
+<!-- 🔥 NAVBAR -->
+<nav class="navbar">
+    <div class="container-fluid px-5 d-flex justify-content-between align-items-center">
 
-    <a href="/" class="btn btn-light w-100 mt-2">Home</a>
+        <div class="navbar-brand">🍔 RecipeGram</div>
 
-    <a href="{% url 'create_post' %}" class="btn btn-post w-100 mt-2">
-        + Post
-    </a>
+        <div>
+<a href="{% url 'posts_home' %}" class="nav-link d-inline">Home</a>
+            <a href="{% url 'create_post' %}" class="nav-link d-inline">Post</a>
+            <a href="{% url 'my_posts' %}" class="nav-link d-inline fw-bold">My Posts</a>
+        </div>
 
-    <!-- ACTIVE -->
-    <a href="{% url 'my_posts' %}" class="btn btn-primary w-100 mt-2">
-        My Posts
-    </a>
+        <div>
+            👤 {{ request.user.username }}
+<a href="{% url 'logout' %}" class="ms-3">Logout</a>
+        </div>
 
-    <a href="/logout/" class="btn btn-outline-dark w-100 mt-2">
-        Logout
-    </a>
-</div>
+    </div>
+</nav>
 
-<!-- ✅ CENTER FEED -->
-<div class="feed container mt-4">
+<!-- 🔥 MAIN -->
+<div class="container-fluid px-5">
 
-    <h4>👤 My Posts</h4>
+    <div class="section-title">👤 My Recipes</div>
 
-    <div class="row mt-3">
+    <div class="row">
+
         {% for post in posts %}
-        <div class="col-md-4 mb-4">
+        <div class="col-md-6 col-lg-3 mb-4">
 
-            <div class="card post-card shadow-sm">
+            <div class="card post-card">
 
                 <!-- IMAGE -->
-                <img src="{{ post.media.url }}" class="w-100">
+                <img src="{{ post.media.url }}">
 
                 <!-- CONTENT -->
-                <div class="p-2">
-                    <small class="text-muted">
-                        {{ post.category }}
-                    </small>
+                <div class="card-body">
 
-                    <p class="mb-2">
-                        {{ post.description|truncatechars:60 }}
-                    </p>
+                    <div class="meta mb-1">
+                        {{ post.category }}
+                    </div>
+
+                    <div class="fw-semibold mb-2">
+                        {{ post.description|truncatechars:50 }}
+                    </div>
 
                     <!-- ACTION BUTTONS -->
                     <div class="d-flex gap-2">
@@ -118,32 +137,16 @@
                             🗑 Delete
                         </a>
                     </div>
+
                 </div>
 
             </div>
 
         </div>
         {% endfor %}
+
     </div>
 
-</div>
-
-<!-- ✅ RIGHT SIDEBAR -->
-<div class="rightbar">
-    <h6>{{ request.user.username }}</h6>
-    <p class="text-muted">Recipe Lover 🍴</p>
-
-    <hr>
-
-    <h6>Quick Actions</h6>
-
-    <a href="{% url 'create_post' %}" class="btn btn-success w-100 mb-2">
-        Create New Post
-    </a>
-
-    <a href="/" class="btn btn-outline-primary w-100">
-        Go to Feed
-    </a>
 </div>
 
 </body>

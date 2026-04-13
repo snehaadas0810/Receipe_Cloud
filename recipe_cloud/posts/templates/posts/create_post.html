@@ -6,63 +6,61 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
         body {
-            background: #fafafa;
-            font-family: 'Segoe UI', sans-serif;
+            background: #f8fafc;
+            font-family: 'Inter', sans-serif;
         }
 
-        /* SIDEBAR */
-        .sidebar {
-            position: fixed;
-            width: 240px;
-            height: 100vh;
+        /* NAVBAR */
+        .navbar {
             background: white;
-            border-right: 1px solid #ddd;
-            padding: 20px;
+            padding: 18px 40px;
         }
 
-        /* FEED */
-        .feed {
-            margin-left: 260px;
-            margin-right: 280px;
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 24px;
         }
 
-        /* RIGHTBAR */
-        .rightbar {
-            position: fixed;
-            right: 0;
-            width: 260px;
-            height: 100vh;
-            background: white;
-            border-left: 1px solid #ddd;
-            padding: 20px;
+        .nav-link {
+            margin: 0 12px;
+            color: #475569 !important;
         }
 
         /* FORM CARD */
         .post-box {
-            max-width: 600px;
-            margin: 40px auto;
+            max-width: 700px;
+            margin: 60px auto;
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.08);
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.06);
         }
 
         .preview {
             width: 100%;
-            margin-top: 10px;
+            margin-top: 12px;
             display: none;
-            border-radius: 10px;
+            border-radius: 12px;
         }
 
         .btn-post {
             background: #ff4d4d;
             color: white;
+            border-radius: 10px;
         }
 
         .btn-post:hover {
             background: #e60023;
+        }
+
+        label {
+            font-weight: 500;
+            margin-top: 12px;
         }
     </style>
 
@@ -70,28 +68,28 @@
 
 <body>
 
-<!-- ✅ SIDEBAR -->
-<div class="sidebar">
-    <h4>🍔 RecipeGram</h4>
+<!-- 🔥 TOP NAVBAR -->
+<nav class="navbar">
+    <div class="container-fluid px-5 d-flex justify-content-between align-items-center">
 
-    <a href="/" class="btn btn-light w-100 mt-2">Home</a>
+        <div class="navbar-brand">🍔 RecipeGram</div>
 
-    <!-- ACTIVE -->
-    <a href="{% url 'create_post' %}" class="btn btn-post w-100 mt-2">
-        + Post
-    </a>
+        <div>
+<a href="{% url 'posts_home' %}" class="nav-link d-inline">Home</a>
+            <a href="{% url 'create_post' %}" class="nav-link d-inline fw-bold">Post</a>
+            <a href="{% url 'my_posts' %}" class="nav-link d-inline">My Posts</a>
+        </div>
 
-    <a href="{% url 'my_posts' %}" class="btn btn-outline-primary w-100 mt-2">
-        My Posts
-    </a>
+        <div>
+            👤 {{ request.user.username }}
+<a href="{% url 'logout' %}" class="ms-3">Logout</a>
+        </div>
 
-    <a href="/logout/" class="btn btn-outline-dark w-100 mt-2">
-        Logout
-    </a>
-</div>
+    </div>
+</nav>
 
-<!-- ✅ CENTER FEED -->
-<div class="feed container">
+<!-- 🔥 MAIN -->
+<div class="container-fluid px-5">
 
     <div class="post-box">
 
@@ -101,34 +99,34 @@
             {% csrf_token %}
 
             <!-- IMAGE -->
-            <label class="form-label">Upload Image</label>
+            <label>Upload Image</label>
             <input type="file" name="media" class="form-control" onchange="previewImage(event)" required>
 
             <img id="preview" class="preview">
 
             <!-- DESCRIPTION -->
-            <label class="form-label mt-3">Description</label>
+            <label>Description</label>
             <textarea name="description" class="form-control" placeholder="Write recipe description..." required></textarea>
 
             <!-- INGREDIENTS -->
-            <label class="form-label mt-3">Ingredients</label>
+            <label>Ingredients</label>
             <textarea name="ingredients" class="form-control" placeholder="Enter ingredients..." required></textarea>
 
             <!-- PROCESS -->
-            <label class="form-label mt-3">Process to Make</label>
+            <label>Process to Make</label>
             <textarea name="process" class="form-control" placeholder="Step-by-step process..." required></textarea>
 
             <!-- CATEGORY -->
-            <label class="form-label mt-3">Category</label>
+            <label>Category</label>
             <select name="category" class="form-control">
                 <option value="veg">Veg</option>
                 <option value="nonveg">Non-Veg</option>
             </select>
 
-            <!-- BUTTON -->
+            <!-- BUTTONS -->
             <button class="btn btn-post w-100 mt-3">Post Recipe</button>
 
-            <a href="/" class="btn btn-outline-secondary w-100 mt-2">Cancel</a>
+            <a href="/posts/" class="btn btn-outline-secondary w-100 mt-2">Cancel</a>
 
         </form>
 
@@ -136,26 +134,7 @@
 
 </div>
 
-<!-- ✅ RIGHT SIDEBAR -->
-<div class="rightbar">
-    <h6>{{ request.user.username }}</h6>
-    <p class="text-muted">Food Creator 🍴</p>
-
-    <hr>
-
-    <h6>Tips 💡</h6>
-    <ul class="small text-muted">
-        <li>Add clear food images</li>
-        <li>Write simple steps</li>
-        <li>Mention exact ingredients</li>
-    </ul>
-
-    <a href="{% url 'my_posts' %}" class="btn btn-outline-primary w-100 mt-2">
-        View My Posts
-    </a>
-</div>
-
-<!-- ✅ IMAGE PREVIEW SCRIPT -->
+<!-- IMAGE PREVIEW -->
 <script>
 function previewImage(event) {
     let reader = new FileReader();

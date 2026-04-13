@@ -1,14 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from posts.models import Post
 
 User = get_user_model()
 
-def home(request):
-    posts = Post.objects.all().order_by('-created_at')
-    return render(request, 'users/home.html', {'posts': posts})
+# ================= INDEX (LANDING PAGE) =================
+def index(request):
+    return render(request, 'users/index.html')
 
 
 # ================= REGISTER =================
@@ -22,24 +21,15 @@ def register_view(request):
         question = request.POST.get('security_question')
         answer = request.POST.get('security_answer')
 
-        # Password match check
         if password != confirm_password:
-            return render(request, 'users/register.html', {
-                'error': 'Passwords do not match'
-            })
+            return render(request, 'users/register.html', {'error': 'Passwords do not match'})
 
-        # Check if user exists
         if User.objects.filter(username=username).exists():
-            return render(request, 'users/register.html', {
-                'error': 'Username already exists'
-            })
+            return render(request, 'users/register.html', {'error': 'Username already exists'})
 
         if User.objects.filter(email=email).exists():
-            return render(request, 'users/register.html', {
-                'error': 'Email already registered'
-            })
+            return render(request, 'users/register.html', {'error': 'Email already registered'})
 
-        # Create user
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -52,7 +42,7 @@ def register_view(request):
         user.save()
 
         login(request, user)
-        return redirect('home')
+        return redirect('/posts/')   # ✅ FIXED
 
     return render(request, 'users/register.html')
 
@@ -67,7 +57,7 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('/posts/')   # ✅ FIXED (IMPORTANT)
         else:
             return render(request, 'users/login.html', {
                 'error': 'Invalid username or password'
@@ -79,12 +69,10 @@ def login_view(request):
 # ================= LOGOUT =================
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('/')   # ✅ back to index
 
 
-# ================= HOME =================
-from posts.models import Post
-
+# ================= DASHBOARD (POSTS PAGE) =================
 def home_view(request):
     posts = Post.objects.all().order_by('-created_at')
 
@@ -101,6 +89,7 @@ def home_view(request):
         'posts': posts
     })
 
+
 # ================= FORGOT PASSWORD =================
 def forgot_password(request):
     if request.method == 'POST':
@@ -112,21 +101,14 @@ def forgot_password(request):
         try:
             user = User.objects.get(username=username, email=email)
 
-            if (
-                user.security_question == question and
-                user.security_answer == answer.lower()
-            ):
+            if user.security_question == question and user.security_answer == answer.lower():
                 request.session['reset_user'] = user.id
                 return redirect('reset_password')
             else:
-                return render(request, 'users/forgot_password.html', {
-                    'error': 'Invalid details'
-                })
+                return render(request, 'users/forgot_password.html', {'error': 'Invalid details'})
 
         except User.DoesNotExist:
-            return render(request, 'users/forgot_password.html', {
-                'error': 'Invalid details'
-            })
+            return render(request, 'users/forgot_password.html', {'error': 'Invalid details'})
 
     return render(request, 'users/forgot_password.html')
 
@@ -145,16 +127,20 @@ def reset_password(request):
         confirm = request.POST.get('confirm_password')
 
         if password != confirm:
-            return render(request, 'users/reset_password.html', {
-                'error': 'Passwords do not match'
-            })
+            return render(request, 'users/reset_password.html', {'error': 'Passwords do not match'})
 
         user.set_password(password)
         user.save()
 
-        # Clear session after reset
         del request.session['reset_user']
-
         return redirect('login')
 
     return render(request, 'users/reset_password.html')
+
+
+# ================= STATIC PAGES =================
+def about(request):
+    return render(request, 'users/about.html')
+
+def contact(request):
+    return render(request, 'users/contact.html')

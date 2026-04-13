@@ -1,14 +1,19 @@
 from django.urls import path
-from .views import create_post, delete_post
 from . import views
 
 urlpatterns = [
-    path('create/', create_post, name='create_post'),
-    path('delete/<int:post_id>/', delete_post, name='delete_post'),
-    path('create-post/', views.create_post, name='create_post'),
+    # 🏠 DASHBOARD (MAIN PAGE)
+    path('', views.posts_home, name='posts_home'),   # ✅ FIXED
+
+    # ➕ CREATE POST
     path('create/', views.create_post, name='create_post'),
-    path('posts/create/', views.create_post, name='create_post'),
+
+    # 👤 MY POSTS
     path('my-posts/', views.my_posts, name='my_posts'),
+
+    # ✏️ EDIT POST
     path('edit/<int:post_id>/', views.edit_post, name='edit_post'),
 
+    # 🗑 DELETE POST
+    path('delete/<int:post_id>/', views.delete_post, name='delete_post'),
 ]

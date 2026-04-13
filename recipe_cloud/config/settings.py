@@ -89,6 +89,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 AUTH_USER_MODEL = 'users.User'
 
 # ================= LOGIN REDIRECT FIX =================
-LOGIN_URL = '/login/'              # 🔥 FIXES YOUR ERROR
-LOGIN_REDIRECT_URL = '/'          # After login
-LOGOUT_REDIRECT_URL = '/login/'   # After logout
+# LOGIN_URL = '/login/'              # 🔥 FIXES YOUR ERROR
+# LOGIN_REDIRECT_URL = '/'          # After login
+# LOGOUT_REDIRECT_URL = '/login/'   # After logout
+
+LOGIN_URL = '/login/'              # where user goes if not logged in
+LOGIN_REDIRECT_URL = '/posts/'     # ✅ after login → dashboard
+LOGOUT_REDIRECT_URL = '/'          # ✅ after logout → index page

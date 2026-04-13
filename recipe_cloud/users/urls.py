@@ -1,11 +1,20 @@
 from django.urls import path
-from .views import register_view, login_view, logout_view, home_view, forgot_password, reset_password
+from . import views
 
 urlpatterns = [
-    path('register/', register_view, name='register'),
-    path('login/', login_view, name='login'),
-    path('logout/', logout_view, name='logout'),
-    path('', home_view, name='home'),
-    path('forgot-password/', forgot_password, name='forgot_password'),
-    path('reset-password/', reset_password, name='reset_password'),
+    # 🔥 LANDING PAGE
+    path('', views.index, name='index'),   # ✅ FIXED
+
+    # 🔐 AUTH
+    path('register/', views.register_view, name='register'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+
+    # 🔑 PASSWORD
+    path('forgot-password/', views.forgot_password, name='forgot_password'),
+    path('reset-password/', views.reset_password, name='reset_password'),
+
+    # ℹ️ STATIC PAGES
+    path('about/', views.about, name='about'),
+    path('contact/', views.contact, name='contact'),
 ]
