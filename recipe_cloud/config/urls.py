@@ -13,7 +13,7 @@
 #     path('', include('posts.urls')),
 #     path('', include('users.urls')),
 #     path('posts/', include('posts.urls')),
-    
+
 # ]
 
 # # ✅ THEN extend it
@@ -26,13 +26,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-
+    path("admin/", admin.site.urls),
     # 🔥 Landing + Auth
-    path('', include('users.urls')),
-
+    path("", include("users.urls")),
     # 🔥 Dashboard + Posts
-    path('posts/', include('posts.urls')),
+    path("posts/", include("posts.urls")),
 ]
 
 # MEDIA FILES

@@ -6,34 +6,40 @@ from posts.models import Post
 User = get_user_model()
 
 # ================= INDEX (LANDING PAGE) =================
+
+
 def index(request):
-    return render(request, 'users/index.html')
+    return render(request, "users/index.html")
 
 
 # ================= REGISTER =================
 def register_view(request):
-    if request.method == 'POST':
-        fullname = request.POST.get('fullname')
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-        question = request.POST.get('security_question')
-        answer = request.POST.get('security_answer')
+    if request.method == "POST":
+        fullname = request.POST.get("fullname")
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+        question = request.POST.get("security_question")
+        answer = request.POST.get("security_answer")
 
         if password != confirm_password:
-            return render(request, 'users/register.html', {'error': 'Passwords do not match'})
+            return render(
+                request, "users/register.html", {"error": "Passwords do not match"}
+            )
 
         if User.objects.filter(username=username).exists():
-            return render(request, 'users/register.html', {'error': 'Username already exists'})
+            return render(
+                request, "users/register.html", {"error": "Username already exists"}
+            )
 
         if User.objects.filter(email=email).exists():
-            return render(request, 'users/register.html', {'error': 'Email already registered'})
+            return render(
+                request, "users/register.html", {"error": "Email already registered"}
+            )
 
         user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password
+            username=username, email=email, password=password
         )
 
         user.first_name = fullname
@@ -42,42 +48,42 @@ def register_view(request):
         user.save()
 
         login(request, user)
-        return redirect('/posts/')   # ✅ FIXED
+        return redirect("/posts/")  # ✅ FIXED
 
-    return render(request, 'users/register.html')
+    return render(request, "users/register.html")
 
 
 # ================= LOGIN =================
 def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
-            return redirect('/posts/')   # ✅ FIXED (IMPORTANT)
+            return redirect("/posts/")  # ✅ FIXED (IMPORTANT)
         else:
-            return render(request, 'users/login.html', {
-                'error': 'Invalid username or password'
-            })
+            return render(
+                request, "users/login.html", {"error": "Invalid username or password"}
+            )
 
-    return render(request, 'users/login.html')
+    return render(request, "users/login.html")
 
 
 # ================= LOGOUT =================
 def logout_view(request):
     logout(request)
-    return redirect('/')   # ✅ back to index
+    return redirect("/")  # ✅ back to index
 
 
 # ================= DASHBOARD (POSTS PAGE) =================
 def home_view(request):
-    posts = Post.objects.all().order_by('-created_at')
+    posts = Post.objects.all().order_by("-created_at")
 
-    query = request.GET.get('q')
-    category = request.GET.get('category')
+    query = request.GET.get("q")
+    category = request.GET.get("category")
 
     if query:
         posts = posts.filter(description__icontains=query)
@@ -85,62 +91,72 @@ def home_view(request):
     if category:
         posts = posts.filter(category=category)
 
-    return render(request, 'users/home.html', {
-        'posts': posts
-    })
+    return render(request, "users/home.html", {"posts": posts})
 
 
 # ================= FORGOT PASSWORD =================
 def forgot_password(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        question = request.POST.get('security_question')
-        answer = request.POST.get('security_answer')
+    if request.method == "POST":
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        question = request.POST.get("security_question")
+        answer = request.POST.get("security_answer")
 
         try:
             user = User.objects.get(username=username, email=email)
 
-            if user.security_question == question and user.security_answer == answer.lower():
-                request.session['reset_user'] = user.id
-                return redirect('reset_password')
+            if (
+                user.security_question == question
+                and user.security_answer == answer.lower()
+            ):
+                request.session["reset_user"] = user.id
+                return redirect("reset_password")
             else:
-                return render(request, 'users/forgot_password.html', {'error': 'Invalid details'})
+                return render(
+                    request, "users/forgot_password.html", {"error": "Invalid details"}
+                )
 
         except User.DoesNotExist:
-            return render(request, 'users/forgot_password.html', {'error': 'Invalid details'})
+            return render(
+                request, "users/forgot_password.html", {"error": "Invalid details"}
+            )
 
-    return render(request, 'users/forgot_password.html')
+    return render(request, "users/forgot_password.html")
 
 
 # ================= RESET PASSWORD =================
 def reset_password(request):
-    user_id = request.session.get('reset_user')
+    user_id = request.session.get("reset_user")
 
     if not user_id:
-        return redirect('forgot_password')
+        return redirect("forgot_password")
 
     user = get_object_or_404(User, id=user_id)
 
-    if request.method == 'POST':
-        password = request.POST.get('password')
-        confirm = request.POST.get('confirm_password')
+    if request.method == "POST":
+        password = request.POST.get("password")
+        confirm = request.POST.get("confirm_password")
 
         if password != confirm:
-            return render(request, 'users/reset_password.html', {'error': 'Passwords do not match'})
+            return render(
+                request,
+                "users/reset_password.html",
+                {"error": "Passwords do not match"},
+            )
 
         user.set_password(password)
         user.save()
 
-        del request.session['reset_user']
-        return redirect('login')
+        del request.session["reset_user"]
+        return redirect("login")
 
-    return render(request, 'users/reset_password.html')
+    return render(request, "users/reset_password.html")
 
 
 # ================= STATIC PAGES =================
 def about(request):
-    return render(request, 'users/about.html')
+    return render(request, "users/about.html")
+
 
 def contact(request):
-    return render(request, 'users/contact.html')
+    return render(request, "users/contact.html")

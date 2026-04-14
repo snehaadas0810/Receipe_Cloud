@@ -7,23 +7,31 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('posts', '0002_post_processtomake'),
+        ("posts", "0002_post_processtomake"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ingredient',
-            name='post',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ingredient_list', to='posts.post'),
+            model_name="ingredient",
+            name="post",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="ingredient_list",
+                to="posts.post",
+            ),
         ),
         migrations.AlterField(
-            model_name='post',
-            name='category',
-            field=models.CharField(choices=[('veg', 'Veg'), ('nonveg', 'Non-Veg')], default='veg', max_length=10),
+            model_name="post",
+            name="category",
+            field=models.CharField(
+                choices=[("veg", "Veg"), ("nonveg", "Non-Veg")],
+                default="veg",
+                max_length=10,
+            ),
         ),
         migrations.AlterField(
-            model_name='post',
-            name='processtomake',
+            model_name="post",
+            name="processtomake",
             field=models.TextField(blank=True, null=True),
         ),
     ]

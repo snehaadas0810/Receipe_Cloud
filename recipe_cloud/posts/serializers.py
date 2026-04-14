@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from .models import Post, Ingredient
 
+
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = ['name']
+        fields = ["name"]
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -12,11 +13,11 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'media', 'media_type', 'description', 'ingredients']
+        fields = ["id", "media", "media_type", "description", "ingredients"]
 
     def create(self, validated_data):
-        ingredients_data = validated_data.pop('ingredients')
-        user = self.context['request'].user
+        ingredients_data = validated_data.pop("ingredients")
+        user = self.context["request"].user
 
         post = Post.objects.create(user=user, **validated_data)
 
