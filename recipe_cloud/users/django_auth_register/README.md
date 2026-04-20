@@ -11,7 +11,7 @@ A reusable Django authentication package.
 
 ## Installation
 
-pip install django-auth-register-imran
+pip install django-auth-register-sneha
 
 ## Usage
 
